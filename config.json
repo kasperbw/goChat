@@ -1,0 +1,20 @@
+{
+    "server": {
+        "address": "127.0.0.1",
+        "port": 3000
+    },
+    "session": {
+        "app_key": "goChat_session",
+        "secret": "goChat_secret",
+        "user_key": "oauth_user",
+        "next_page" : "next_page",
+        "duration_sec": 3600
+    },
+    "auth": {
+        "securit_key": "kasperbeaky_Sunwoo",
+        "google": {
+            "client_id": "479000538192-tbdub35i7cp1i93m3om0bbrmq3ge5qv8.apps.googleusercontent.com",
+            "secret": "OX3GPeEDhSi0UkAUVkGnTcn2"
+        }
+    }
+}
