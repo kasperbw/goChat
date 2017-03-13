@@ -8,6 +8,8 @@ type Config struct {
 	Server  ServerConfig  `json:"server"`
 	Session SessionConfig `json:"session"`
 	Auth    AuthConfig    `json:"auth"`
+	Mongo   MongoConfig   `json:"mongo"`
+	Socket  SocketConfig  `json:"socket"`
 }
 
 //서버 설정 정보
@@ -30,8 +32,19 @@ type AuthConfig struct {
 }
 
 type GoogleAuth struct {
-	ClientID string `json:client_id`
+	ClientID string `json:"client_id"`
 	Secret   string `json:"secret"`
+}
+
+type MongoConfig struct {
+	Address          string `json:"address"`
+	Name             string `json:"name"`
+	MessageListLimit int    `json:"message_list_limit"`
+}
+
+type SocketConfig struct {
+	Bufsize       int `json:"buf_size"`
+	MsgChanelSize int `json:"msg_chan_size"`
 }
 
 var instance Config
@@ -61,4 +74,12 @@ func Session() *SessionConfig {
 
 func Auth() *AuthConfig {
 	return &instance.Auth
+}
+
+func Mongo() *MongoConfig {
+	return &instance.Mongo
+}
+
+func Socket() *SocketConfig {
+	return &instance.Socket
 }

@@ -1,0 +1,66 @@
+<div class="page-header">
+    <h4>Room List</h4>
+</div>
+<div id="rooms" class="list-group">
+</div>
+<form class="input-group">
+    <input id="room-name" type="text" class="form-control" placeholder="insert room name">
+    <span class="input-group-btn">
+        <button id="create-room" class="btn btn-default" type="submit">Create</button>
+    </span>
+</form>
+<script>
+    var currentRoomId = null;
+
+    var createRoomBox = function(room) {
+
+        $("#rooms").prepend(
+            $("<a>").attr("id", room.id)
+            .attr("href", "#")
+            .text(room.name)
+            .addClass("list-group-item")
+            .bind("click", function(e){
+                e.preventDefault()
+
+                var roomId = $(this).attr("id");
+                if(currentRoomId) {
+                    $("#rooms #" + currentRoomId).removeClass("active")
+                }
+                $("#rooms #" + roomId).addClass("active")
+                enterRoom(roomId)
+                currentRoomId = roomId
+            })
+        );
+
+        $("#room-name").val("");
+
+        activateRoom(room.id);
+    };
+
+    var activateRoom = function(roomId) {
+        if (currentRoomId) {
+            $("#rooms #" + currentRoomId).removeClass("active")
+        }
+        $("#rooms #" + roomId).addClass("active")
+        enterRoom(roomId);
+        currentRoomId = roomId;
+    };
+
+    $(document).ready(function(){
+
+        $("#create-room").click(function(){
+            $.post("/rooms", {name:$("#room-name").val()},
+                function(data, status) {
+                    var room = JSON.parse(data);
+                    createRoomBox(room)
+                }
+             );
+        });
+
+        $.get("/rooms", function(rooms) {
+            for( var i=0 ; i < rooms.length; i++ ) {
+                createRoomBox(rooms[i]);
+            }
+        });
+    });
+</script>

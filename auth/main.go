@@ -2,20 +2,19 @@ package auth
 
 import (
 	"fmt"
-
-	"github.com/stretchr/gomniauth"
-	"github.com/stretchr/gomniauth/providers/google"
-
-	"goChat/config"
-	"goChat/usersession"
-
-	"net/http"
-
 	"log"
+	"net/http"
+	"strings"
 
 	"github.com/goincremental/negroni-sessions"
 	"github.com/julienschmidt/httprouter"
+	"github.com/stretchr/gomniauth"
+	"github.com/stretchr/gomniauth/providers/google"
 	"github.com/stretchr/objx"
+	"github.com/urfave/negroni"
+
+	"goChat/config"
+	"goChat/usersession"
 )
 
 type ProviderType int
@@ -43,24 +42,26 @@ func googleInitialize() {
 	serverConfig := config.Server()
 
 	callbackAddr := fmt.Sprintf("http://%s:%d/auth/callback/google", serverConfig.Address, serverConfig.Port)
-	gomniauth.WithProviders(google.New(authConfig.Google.ClientID, authConfig.Google.Secret, callbackAddr))
+	gomniauth.WithProviders(
+		google.New(authConfig.Google.ClientID, authConfig.Google.Secret, callbackAddr),
+	)
 }
 
-func LoginPOSTHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+func AuthGetHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	action := ps.ByName("action")
 	provider := ps.ByName("provider")
 
 	switch action {
 	case "login":
-		loginReqProcess(provider, w, r)
+		authReqProcess(provider, w, r)
 	case "callback":
-		loginCallbackProcess(provider, w, r)
+		authCallbackProcess(provider, w, r)
 	default:
 		http.Error(w, fmt.Sprintf("Auth actoin '%s' is not supported", action), http.StatusNotFound)
 	}
 }
 
-func loginReqProcess(provider string, w http.ResponseWriter, r *http.Request) {
+func authReqProcess(provider string, w http.ResponseWriter, r *http.Request) {
 	p, err := gomniauth.Provider(provider)
 	if err != nil {
 		log.Fatalln(err)
@@ -74,7 +75,7 @@ func loginReqProcess(provider string, w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, loginURL, http.StatusFound)
 }
 
-func loginCallbackProcess(provider string, w http.ResponseWriter, r *http.Request) {
+func authCallbackProcess(provider string, w http.ResponseWriter, r *http.Request) {
 	p, err := gomniauth.Provider(provider)
 	if err != nil {
 		log.Fatalln(err)
@@ -111,4 +112,29 @@ func loginCallbackProcess(provider string, w http.ResponseWriter, r *http.Reques
 	}
 
 	http.Redirect(w, r, nextURL, http.StatusFound)
+}
+
+func LoginRequired(ignore ...string) negroni.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+		for _, s := range ignore {
+			if strings.HasPrefix(r.URL.Path, s) {
+				next(w, r)
+				return
+			}
+		}
+
+		u := usersession.GetUserSession(r)
+
+		if u != nil && u.Valid() {
+			usersession.SetUserSession(r, u)
+			next(w, r)
+			return
+		}
+
+		usersession.SetUserSession(r, nil)
+
+		sessions.GetSession(r).Set(config.Session().NextKey, r.URL.RequestURI())
+
+		http.Redirect(w, r, "/login", http.StatusFound)
+	}
 }
