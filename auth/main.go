@@ -95,7 +95,7 @@ func authCallbackProcess(provider string, w http.ResponseWriter, r *http.Request
 		UID:       user.Data().Get("id").MustStr(),
 		Name:      user.Name(),
 		Email:     user.Email(),
-		AvartaURL: user.AvatarURL(),
+		AvatarURL: user.AvatarURL(),
 	}
 
 	usersession.SetUserSession(r, u)

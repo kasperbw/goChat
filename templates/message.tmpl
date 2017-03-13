@@ -41,9 +41,9 @@
 
     function addMessage(message) {
         var img = $("<div>").addClass("media-left").append(
-            $("<img>").addClass("img-thumb").css({
+            $("<img>").css({
                 width:30
-            }).attr("src",message.user.arvatar_url)
+            }).attr("src",message.user.avatar_url)
         );
 
         var msg = $("<div>").addClass("media-body").append(

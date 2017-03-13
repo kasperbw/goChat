@@ -15,7 +15,7 @@ type UserSession struct {
 	UID       string    `json:"uid"`
 	Name      string    `json:"name"`
 	Email     string    `json:"user"`
-	AvartaURL string    `json:"avarta_url"`
+	AvatarURL string    `json:"avatar_url"`
 	Expired   time.Time `json:"expired"`
 }
 
