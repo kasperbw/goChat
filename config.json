@@ -11,7 +11,7 @@
         "duration_sec": 3600
     },
     "auth": {
-        "securit_key": "kasperbeaky_Sunwoo",
+        "security_key": "kasperbeaky_Sunwoo",
         "google": {
             "client_id": "479000538192-tbdub35i7cp1i93m3om0bbrmq3ge5qv8.apps.googleusercontent.com",
             "secret": "OX3GPeEDhSi0UkAUVkGnTcn2"

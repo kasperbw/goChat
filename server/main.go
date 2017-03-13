@@ -4,31 +4,25 @@ import (
 	"github.com/goincremental/negroni-sessions"
 	"github.com/goincremental/negroni-sessions/cookiestore"
 	"github.com/julienschmidt/httprouter"
-	"github.com/unrolled/render"
 	"github.com/urfave/negroni"
 
 	"fmt"
 	"goChat/auth"
 	"goChat/config"
+	"goChat/rest"
 )
-
-var renderer *render.Render
-
-func init() {
-	renderer = render.New()
-}
 
 func New(configFile string) {
 	config.MustLoad(configFile)
+	auth.MustInitialize(auth.ProviderGoogle | auth.ProviderApple)
 }
 
 func Run() {
-	auth.MustInitialize(ProviderGoogle | ProviderAppe)
 	router := httprouter.New()
 
-	router.GET("/", rootGETHandler)
-	router.GET("/login", loginGETHandler)
-	router.GET("/logout", logoutGETHandler)
+	router.GET("/", rest.RootGETHandler)
+	router.GET("/login", rest.LoginGETHandler)
+	router.GET("/logout", rest.LogoutGETHandler)
 
 	//middleware 생성
 	n := negroni.Classic()

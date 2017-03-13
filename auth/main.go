@@ -25,15 +25,15 @@ const (
 	ProviderApple
 )
 
-func MustInitialize(provaders int) {
+func MustInitialize(provaders ProviderType) {
 	authConfig := config.Auth()
 	gomniauth.SetSecurityKey(authConfig.SecurityKey)
 
-	if provaders&int(ProviderGoogle) > 0 {
+	if provaders&ProviderGoogle > 0 {
 		googleInitialize()
 	}
 
-	if provaders&int(ProviderApple) > 0 {
+	if provaders&ProviderApple > 0 {
 		fmt.Println("Apple Initialzie")
 	}
 }
